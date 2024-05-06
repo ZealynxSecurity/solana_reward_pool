@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 use solana_program::pubkey::Pubkey;
 
-declare_id!("Fg6PaFyL1JpZ5eXdiKxzg1D4d2tfnTVMMk2xVZ7JvA9D");
+declare_id!("44cUoDQ2V5GH5zgaYD7A3EMgRCnWXRGvfCgGkEUxxYWS");
 
 #[program]
 pub mod reward_pool_main {
