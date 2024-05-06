@@ -5,12 +5,69 @@ use solana_program::pubkey::Pubkey;
 declare_id!("Fg6PaFyL1JpZ5eXdiKxzg1D4d2tfnTVMMk2xVZ7JvA9D");
 
 #[program]
-pub mod reward_pool {
+pub mod reward_pool_main {
     use super::*;
     pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
         let reward_pool = &mut ctx.accounts.reward_pool;
         reward_pool.tax_recipient = ctx.accounts.user.key();
         reward_pool.owner = ctx.accounts.user.key();
+        Ok(())
+    }
+
+    #[allow(unused_variables)]
+    pub fn deposit_reward(
+        ctx: Context<DepositReward>, 
+        token_address: Pubkey, 
+        campaign_amount: u64,
+        fee_amount: u64,
+        campaign_id: u64
+    ) -> Result<()> {
+        // Logic for depositing rewards
+        let reward_info = &mut ctx.accounts.reward_info;
+        let reward_pool = &mut ctx.accounts.reward_pool;
+
+        if reward_pool.paused {
+            return Err(ErrorCode::ProgramPaused.into());
+        }
+        
+        // Ensure the campaign is new by checking if token_address is default (indicating uninitialized)
+        if reward_info.token_address != Pubkey::default() {
+            return Err(ErrorCode::CampaignAlreadyExists.into());
+        }
+
+        // Perform the token transfer for the fee
+        let transfer_fee_ix = Transfer {
+            from: ctx.accounts.user.to_account_info(),
+            to: ctx.accounts.tax_recipient_account.to_account_info(),
+            authority: ctx.accounts.user.to_account_info(),
+        };
+        token::transfer(
+            CpiContext::new(
+                ctx.accounts.token_program.to_account_info(),
+                transfer_fee_ix
+            ),
+            fee_amount,
+        )?;
+
+        // Perform the token transfer for the campaign amount to the campaign's token account
+        let transfer_campaign_ix = Transfer {
+            from: ctx.accounts.user.to_account_info(),
+            to: ctx.accounts.campaign_token_account.to_account_info(),
+            authority: ctx.accounts.user.to_account_info(),
+        };
+        token::transfer(
+            CpiContext::new(
+                ctx.accounts.token_program.to_account_info(),
+                transfer_campaign_ix
+            ),
+            campaign_amount,
+        )?;
+        
+        // Initialize or update reward_info
+        reward_info.token_address = token_address;
+        reward_info.amount += campaign_amount; // Assuming accumulation of amounts if multiple deposits
+        reward_info.owner_address = *ctx.accounts.user.key;
+
         Ok(())
     }
 
