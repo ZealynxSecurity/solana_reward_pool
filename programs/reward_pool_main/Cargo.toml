@@ -1,5 +1,5 @@
 [package]
-name = "rewar_pool"
+name = "reward_pool_main"
 version = "0.1.0"
 edition = "2021"
 
