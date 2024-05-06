@@ -1613,7 +1613,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "adad44e29e4c806119491a7f06f03de4d1af22c3a680dd47f1e6e179439d1f56"
 
 [[package]]
-name = "rewar_pool"
+name = "reward_pool_main"
 version = "0.1.0"
 dependencies = [
  "anchor-lang",

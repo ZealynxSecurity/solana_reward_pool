@@ -5,7 +5,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-test_rewar_pool = "44cUoDQ2V5GH5zgaYD7A3EMgRCnWXRGvfCgGkEUxxYWS"
+reward_pool_main = "44cUoDQ2V5GH5zgaYD7A3EMgRCnWXRGvfCgGkEUxxYWS"
 
 [registry]
 url = "https://api.apr.dev"

@@ -1,7 +1,6 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
-import { TestRewarPool } from "../target/types/reward_pool_main";
-import { findProgramAddressSync } from "@project-serum/anchor/dist/cjs/utils/pubkey";
+import { RewardPoolMain } from "../target/types/reward_pool_main";
 import { assert } from "chai";
 
 // Airdrop function
@@ -10,24 +9,25 @@ async function airdrop(connection, pubkey) {
   await connection.confirmTransaction(airdropSignature, "confirmed");
 }
 
-describe("test_rewar_pool", () => {
+describe("reward_pool_main", () => {
   const provider = anchor.AnchorProvider.local("http://127.0.0.1:8899");
   anchor.setProvider(provider);
 
   const connection = provider.connection;
   const wallet = provider.wallet;
   const walletFake = anchor.web3.Keypair.generate();
-  const program = anchor.workspace.TestRewarPool as Program<TestRewarPool>;
+  const program = anchor.workspace.RewardPoolMain as Program<RewardPoolMain>;
   const vault = anchor.web3.Keypair.generate();
-  const [tokenPDA] = findProgramAddressSync(
-    [Buffer.from("token")],
-    program.programId
-  );
+
 
   it("Initializes the reward pool", async () => {
     // Airdrop to the wallet
     await airdrop(connection, wallet.publicKey);
 
+    const [tokenPDA] = await anchor.web3.PublicKey.findProgramAddressSync(
+      [Buffer.from("token")],
+      program.programId
+    );
     const [rewardPoolPda] = await anchor.web3.PublicKey.findProgramAddress(
       [Buffer.from("reward_pool")],
       program.programId
